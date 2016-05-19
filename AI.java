@@ -88,7 +88,7 @@ public class AI {
 
 		//score is alpha if it is the ai's move if not score is beta
 		//return score and chosen move's coordinate
-		return new {(player == this.token) ? alpha : beta, row, col};
+		return new int[] {(player == this.token) ? alpha : beta, row, col};
 	}
 
 	//return all possible moves for current board's state
