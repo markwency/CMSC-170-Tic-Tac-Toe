@@ -28,20 +28,15 @@ public class AI {
 
 	//ai's turn to make move
 	int [] move() {
-		int[] chosenMove= new int[2];
 		//depth, token, alpha, beta
 		int[] result = alphabeta(2, token, Integer.MIN_VALUE, Integer.MAX_VALUE);
-
-		//get coordinates of chosen move
-		chosenMove[0] = result[1];
-		chosenMove[1] = result[2];
-
-		return chosenMove;
+		
+		//return chosen move
+		return new int[] {result[1], result[2]};
 	}
 	
 	//minmax algo with alphabeta pruning
 	int[] alphabeta(int depth, Token player, int alpha, int beta) {
-
 
 		List<int[]>children;
 		int score;
@@ -59,15 +54,13 @@ public class AI {
 			return vector;
 		}
 
-		//ai's turn
-		if(player.equals(this.token)) {
-			//all possible moves (non-empty)
-			children = Actions();
-			
-			//execute all possible moves, returned by action
-			for(int[] child : children) {
-				board[child[0]][child[1]] = player;
+		//all possible moves (non-empty)
+		children = Actions();
 
+		for(int[] child : children){
+			
+			//ai's turn
+			if(player.equals(this.token)){
 				//compare alpha to utility value of move done
 				vector = alphabeta(depth-1,this.oppToken,alpha,beta);
 				if(vector[0] > alpha) {
@@ -75,22 +68,7 @@ public class AI {
 					row = child[0];
 					col = child[1];
 				}
-				
-				//undo move done
-				board[child[0]][child[1]] = Token.EMPTY;
-				
-	
-				if(beta <= alpha)
-					break;
-			}
-		} else {
-			
-			//user's turn
-			children = Actions();
-			
-			//execute all possible moves
-			for(int[] child : children) {
-				board[child[0]][child[1]] = player;
+			}else{ //user's turn
 				//get alphabeta of depth-1				
 				vector = alphabeta(depth-1,this.token,alpha,beta);
 				
@@ -100,25 +78,17 @@ public class AI {
 					row = child[0];
 					row = child[1];
 				}
-				
-				//undo move done
-				board[child[0]][child[1]] = Token.EMPTY;
-
-				if(beta <= alpha)
-					break;
 			}
+			//undo move done
+			board[child[0]][child[1]] = Token.EMPTY;
+			// for the cutoff
+			if(beta <= alpha)
+				break;
 		}
 
 		//score is alpha if it is the ai's move if not score is beta
-		if(player == this.token)
-			vector[0] = alpha;
-		else
-			vector[0] = beta;
-		vector[1] = row;
-		vector[2] = col;
-
 		//return score and chosen move's coordinate
-		return vector;
+		return new {(player == this.token) ? alpha : beta, row, col};
 	}
 
 	//return all possible moves for current board's state
